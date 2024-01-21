@@ -1,4 +1,8 @@
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
 import { z } from "zod";
 
 // protectedProcedure -> means you must be authenticated
@@ -19,4 +23,87 @@ export const tweetRouter = createTRPCRouter({
       });
       return newTweet;
     }),
+  // infiniteFeed: publicProcedure
+  //   .input(
+  //     z.object({
+  //       limit: z.number().optional(),
+  //       cursor: z
+  //         .object({
+  //           id: z.string(),
+  //           createdAt: z.date(),
+  //         })
+  //         .optional(),
+  //     }),
+  //   )
+  //   .query(async ({ input: { limit = 10, cursor }, ctx }) => {
+  //     const currentUserId = ctx.session?.user.id;
+  //     const tweets = await ctx.db.tweet.findMany({
+  //       take: limit + 1,
+  //       cursor: cursor ? { createdAt_id: cursor } : undefined,
+  //       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+  //       select: {
+  //         id: true,
+  //         content: true,
+  //         createdAt: true,
+  //         _count: {
+  //           select: {
+  //             likes: true,
+  //           },
+  //         },
+  //         likes:
+  //           currentUserId === null
+  //             ? false
+  //             : {
+  //                 where: {
+  //                   userId: currentUserId,
+  //                 },
+  //               },
+  //         user: {
+  //           select: {
+  //             name: true,
+  //             id: true,
+  //             image: true,
+  //           },
+  //         },
+  //       },
+  //     });
+  //     let nextCursor: typeof cursor | undefined;
+  //     if(tweets.length > limit) {
+  //       const nextItem = tweets.pop();
+  //       if(nextItem !== null) {
+  //         nextCursor = { id: String(nextItem?.id), createdAt: (nextItem?.createdAt) }
+  //       }
+  //     }
+  //     return {tweets, nextCursor};
+  //   }),
+  infiniteFeed: publicProcedure.mutation(async ({ ctx }) => {
+    const currentUserId = ctx.session?.user.id;
+    const tweets = await ctx.db.tweet.findMany({
+      select: {
+        id: true,
+        content: true,
+        createdAt: true,
+        _count: {
+          select: {
+            likes: true,
+          },
+        },
+        likes: !currentUserId
+          ? false
+          : {
+              where: {
+                userId: currentUserId,
+              },
+            },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
+      },
+    });
+    return tweets;
+  }),
 });

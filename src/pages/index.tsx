@@ -1,4 +1,5 @@
 import NewTweetForm from "~/components/NewTweetForm";
+import RecentTweets from "~/components/RecentTweets";
 
 export default function Home() {
   return (
@@ -7,6 +8,7 @@ export default function Home() {
         <h1 className="mb-2 px-4 text-lg font-bold">Home</h1>
       </header>
       <NewTweetForm />
+      <RecentTweets />
     </>
   );
 }
