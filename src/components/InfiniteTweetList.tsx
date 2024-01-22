@@ -4,11 +4,16 @@ interface InfiniteTweetListProps {
   tweets: ITweet[];
 }
 
+interface Likes {
+  tweetId: string;
+  userId: string;
+}
+
 interface ITweet {
   content: string;
   createdAt: Date;
   id: string;
-  likes?: string[];
+  likes?: Likes[];
   _count: {
     likes: number;
   };
@@ -20,6 +25,8 @@ interface ITweet {
 }
 
 const InfiniteTweetList = ({ tweets }: InfiniteTweetListProps) => {
+  console.log(tweets);
+
   return (
     <ul>
       {tweets.map((tweet: ITweet) => (

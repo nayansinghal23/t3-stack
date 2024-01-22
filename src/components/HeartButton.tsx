@@ -1,14 +1,24 @@
 import { useSession } from "next-auth/react";
 import { VscHeart, VscHeartFilled } from "react-icons/vsc";
+import { api } from "~/utils/api";
 
 interface HeartButtonProps {
   likedByMe: boolean | undefined;
   likeCount: number;
+  tweetId: string;
 }
 
-const HeartButton = ({ likedByMe, likeCount }: HeartButtonProps) => {
+const HeartButton = ({
+  likedByMe = false,
+  likeCount,
+  tweetId,
+}: HeartButtonProps) => {
   const session = useSession();
   const HeartIcon = likedByMe ? VscHeartFilled : VscHeart;
+  const toggleLikeApi = api.tweet.toggleLike.useMutation();
+  const handleLikeTweet = () => {
+    toggleLikeApi.mutate({ id: tweetId });
+  };
 
   if (session.status !== "authenticated") {
     return (
@@ -22,6 +32,7 @@ const HeartButton = ({ likedByMe, likeCount }: HeartButtonProps) => {
     <button
       className={`group flex items-center gap-1 self-start transition-colors duration-200 ${likedByMe ? "text-red-500" : "text-gray-500 hover:text-red-500 focus-visible:text-red-500"}
       `}
+      onClick={handleLikeTweet}
     >
       <HeartIcon
         className={`transition-colors duration-200 ${likedByMe ? "fill-red-500" : "fill-gray-500 group-hover:fill-red-500 group-focus-visible:fill-red-500"}`}

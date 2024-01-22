@@ -1,16 +1,22 @@
 import Link from "next/link";
 import ProfileImage from "./ProfileImage";
 import HeartButton from "./HeartButton";
+import { useSession } from "next-auth/react";
 
 interface TweetCardProps {
   tweet: ITweet;
+}
+
+interface Likes {
+  tweetId: string;
+  userId: string;
 }
 
 interface ITweet {
   content: string;
   createdAt: Date;
   id: string;
-  likes?: string[];
+  likes?: Likes[];
   _count: {
     likes: number;
   };
@@ -22,6 +28,7 @@ interface ITweet {
 }
 
 const TweetCard = ({ tweet }: TweetCardProps) => {
+  const session = useSession();
   const dateTimeFormatter = new Intl.DateTimeFormat(undefined, {
     dateStyle: "short",
   });
@@ -46,8 +53,9 @@ const TweetCard = ({ tweet }: TweetCardProps) => {
         </div>
         <p className="whitespcae-pre-wrap">{tweet.content}</p>
         <HeartButton
-          likedByMe={tweet?.likes?.includes(tweet.user.id)}
+          likedByMe={tweet.likes?.length === 0 ? false : true}
           likeCount={tweet._count.likes}
+          tweetId={tweet.id}
         />
       </div>
     </li>
