@@ -2,6 +2,7 @@ import TweetCard from "./TweetCard";
 
 interface InfiniteTweetListProps {
   tweets: ITweet[];
+  setTweets: any;
 }
 
 interface Likes {
@@ -24,13 +25,13 @@ interface ITweet {
   };
 }
 
-const InfiniteTweetList = ({ tweets }: InfiniteTweetListProps) => {
+const InfiniteTweetList = ({ tweets, setTweets }: InfiniteTweetListProps) => {
   console.log(tweets);
 
   return (
     <ul>
       {tweets.map((tweet: ITweet) => (
-        <TweetCard tweet={tweet} key={tweet.id} />
+        <TweetCard tweet={tweet} key={tweet.id} setTweets={setTweets} />
       ))}
     </ul>
   );

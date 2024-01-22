@@ -4,11 +4,21 @@ import ProfileImage from "./ProfileImage";
 import { useState } from "react";
 import { api } from "~/utils/api";
 
-const NewTweetForm = () => {
+interface NewTweetFormProps {
+  setTweets: any;
+}
+
+const NewTweetForm = ({ setTweets }: NewTweetFormProps) => {
   const session = useSession();
   const user = session.data?.user;
   const [inputValue, setInputValue] = useState<string>("");
-  const tweetApi = api.tweet.create.useMutation();
+  const getTweets = api.tweet.infiniteFeed.useMutation();
+  const tweetApi = api.tweet.create.useMutation({
+    onSuccess: async () => {
+      const allTweets = await getTweets.mutateAsync();
+      setTweets(allTweets);
+    },
+  });
 
   const handleSubmit = () => {
     if (!inputValue) return;
@@ -33,6 +43,9 @@ const NewTweetForm = () => {
         handleSubmit();
       }}
     >
+      {tweetApi.isLoading && (
+        <p className="text-center text-2xl font-bold">Tweeting...</p>
+      )}
       <div className="flex gap-4">
         <ProfileImage src={user?.image} />
         <textarea
@@ -43,7 +56,7 @@ const NewTweetForm = () => {
           placeholder="What's happening?"
         />
       </div>
-      <Button text="Tweet" className="self-end" />
+      <Button text="Tweet" className="self-end" disabled={tweetApi.isLoading} />
     </form>
   );
 };

@@ -1,12 +1,17 @@
-import { useEffect, useState } from "react";
+import React, { SetStateAction, useEffect } from "react";
 import InfiniteTweetList from "./InfiniteTweetList";
 import { api } from "~/utils/api";
+
+interface Likes {
+  tweetId: string;
+  userId: string;
+}
 
 interface ITweet {
   content: string;
   createdAt: Date;
   id: string;
-  likes?: string[];
+  likes?: Likes[];
   _count: {
     likes: number;
   };
@@ -17,8 +22,12 @@ interface ITweet {
   };
 }
 
-const RecentTweets = () => {
-  const [tweets, setTweets] = useState<ITweet[]>([]);
+interface RecentTweetsProps {
+  tweets: ITweet[];
+  setTweets: React.Dispatch<SetStateAction<ITweet[]>>;
+}
+
+const RecentTweets = ({ tweets, setTweets }: RecentTweetsProps) => {
   const getTweets = api.tweet.infiniteFeed.useMutation();
 
   useEffect(() => {
@@ -32,7 +41,11 @@ const RecentTweets = () => {
       });
   }, []);
 
-  return <InfiniteTweetList tweets={tweets} />;
+  if (getTweets.isLoading) {
+    return <p className="text-center text-2xl font-bold">Loading...</p>;
+  }
+
+  return <InfiniteTweetList tweets={tweets} setTweets={setTweets} />;
 };
 
 export default RecentTweets;

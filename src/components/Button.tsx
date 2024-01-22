@@ -3,6 +3,7 @@ interface ButtonProps {
   grey?: boolean;
   className?: string;
   text: string;
+  disabled?: boolean;
 }
 
 const Button = ({
@@ -10,7 +11,7 @@ const Button = ({
   grey = false,
   className = "",
   text,
-  ...props
+  disabled = false,
 }: ButtonProps) => {
   const sizeClasses = small ? "px-2 py-1" : "px-4 py-2 font-bold";
   const colorClasses = grey
@@ -21,7 +22,7 @@ const Button = ({
     <>
       <button
         className={`rounded-full text-white transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50 ${sizeClasses} ${colorClasses} ${className}`}
-        {...props}
+        disabled={disabled}
       >
         {text}
       </button>
