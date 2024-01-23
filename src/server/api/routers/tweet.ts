@@ -135,4 +135,18 @@ export const tweetRouter = createTRPCRouter({
       });
       return { addedLike: false };
     }),
+  deleteTweet: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const deletedTweet = await ctx.db.tweet.delete({
+        where: {
+          id: input.id,
+        },
+      });
+      return deletedTweet;
+    }),
 });

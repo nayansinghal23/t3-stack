@@ -7,6 +7,7 @@ import { api } from "~/utils/api";
 import "~/styles/globals.css";
 import Head from "next/head";
 import SideNav from "~/components/SideNav";
+import TweetContextProvider from "~/context/TweetContext";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -18,12 +19,14 @@ const MyApp: AppType<{ session: Session | null }> = ({
         <title>Twitter Clone</title>
         <meta name="description" content="T3 Stack" />
       </Head>
-      <div className="container mx-auto flex items-start sm:pr-4">
-        <SideNav />
-        <div className="min-h-screen flex-grow border-x">
-          <Component {...pageProps} />
+      <TweetContextProvider>
+        <div className="container mx-auto flex items-start sm:pr-4">
+          <SideNav />
+          <div className="min-h-screen flex-grow border-x">
+            <Component {...pageProps} />
+          </div>
         </div>
-      </div>
+      </TweetContextProvider>
     </SessionProvider>
   );
 };
