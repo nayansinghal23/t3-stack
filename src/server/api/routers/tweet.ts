@@ -104,8 +104,40 @@ export const tweetRouter = createTRPCRouter({
         },
       },
     });
+    tweets.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
     return tweets;
   }),
+  getById: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .query(async ({ input: { id }, ctx }) => {
+      const profile = await ctx.db.user.findUnique({
+        where: {
+          id,
+        },
+        select: {
+          name: true,
+          image: true,
+          _count: {
+            select: {
+              tweets: true,
+            },
+          },
+        },
+      });
+      if (profile === null) return;
+      return {
+        name: profile.name,
+        image: profile.image,
+        tweetsCount: profile._count.tweets,
+      };
+    }),
   toggleLike: protectedProcedure
     .input(
       z.object({
